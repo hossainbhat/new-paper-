@@ -19,7 +19,7 @@
         <link href="{{asset('BackEnd/css/icons.min.css')}}" rel="stylesheet" type="text/css" />
         <!-- App Css-->
         <link href="{{asset('BackEnd/css/app.min.css')}}" id="app-style" rel="stylesheet" type="text/css" />
-
+        @toastr_css
         @yield("css_script")
     </head>
 
@@ -61,8 +61,11 @@
         <script src="{{asset('BackEnd/libs/metismenu/metisMenu.min.js')}}"></script>
         <script src="{{asset('BackEnd/libs/simplebar/simplebar.min.js')}}"></script>
         <script src="{{asset('BackEnd/libs/node-waves/waves.min.js')}}"></script>
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="{{asset('BackEnd/js/app.js')}}"></script>
-
+        <script src="{{asset('BackEnd/js/custom_js.js')}}"></script>
+        @toastr_js
+        @toastr_render
         @yield("js_script")
     </body>
 </html>

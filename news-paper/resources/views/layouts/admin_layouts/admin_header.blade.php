@@ -129,7 +129,7 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-right">
                     <!-- item-->
-                    <a class="dropdown-item" href="#"><i class="dripicons-user d-inlne-block text-muted mr-2"></i> Profile</a>
+                    <a class="dropdown-item" href="{{route('admin.profile')}}"><i class="dripicons-user d-inlne-block text-muted mr-2"></i> Profile</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="{{route('admin.logout')}}"><i class="dripicons-exit d-inlne-block text-muted mr-2"></i> Logout</a>
                 </div>

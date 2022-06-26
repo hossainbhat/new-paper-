@@ -47,6 +47,12 @@
                 </li>
 
                 <li>
+                    <a href="#" class=" waves-effect">
+                        <i class="fas fa-cog"></i>
+                        <span>Setting</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{route('admin.logout')}}" class=" waves-effect">
                         <i class="dripicons-power"></i>
                         <span>Logout</span>
