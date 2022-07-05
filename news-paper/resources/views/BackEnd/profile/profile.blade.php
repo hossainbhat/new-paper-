@@ -28,13 +28,19 @@
                 <div class="card profile">
                     <div class="card-body">
                         <div class="text-center">
-                            <img src="{{asset('BackEnd/images/users/user-3.jpg')}}" alt="" class="rounded-circle img-thumbnail avatar-xl">
+                            @if($admin->image >0)
+                            <img src="{{asset('uploads/profile/'.$admin->image)}}" alt="" class="rounded-circle img-thumbnail avatar-xl">
+                            @else 
+                            <img src="{{asset('uploads/profile/no-image.jpg')}}" alt="" class="rounded-circle img-thumbnail avatar-xl">
+                            @endif
                             <div class="online-circle">
                                 <i class="fa fa-circle text-success"></i>
                             </div>                                        
                             <h4 class="mt-3">{{$admin->name}}</h4>
-                            <p class="text-muted font-12">Project Manager</p>
-                            <a href="#" class="btn btn-pink btn-round px-5">Follow Me</a>                                    
+                            @foreach ($admin->roles as $role)
+                            <span class="badge badge-boxed  badge-primary">{{ $role->name }}</span>
+                            @endforeach
+                            <a href="#" class="btn btn-pink btn-round px-5">Contact Me</a>                                    
                         </div>                                    
                     </div>
                 </div>
@@ -243,13 +249,13 @@
                                                                 <input type="file" name="image" class="form-control">
                                                                 @if($admin->image > 0)
                                                                 <div class="mt-2">
-                                                                    <img class="rounded-circle" src="{{asset('uploads/profile/'.$admin->image)}}" width="70" alt=""> 
+                                                                    <img class="rounded-circle" src="{{asset('uploads/profile/'.$admin->image)}}" width="70" height="70" alt=""> 
                                                                     &nbsp; 
                                                                     <a class="confirmDelete" record="profile-image" recoedid="{{ $admin->id }}" href="javascript:void('0')"><i class="btn btn-danger btn-sm fas fa-trash-alt"></i></a>
                                                                 </div>
                                                                 @else 
                                                                 <div class="mt-2">
-                                                                    <img class="rounded-circle" src="{{asset('uploads/profile/no-image.jpg')}}" width="70" alt="">
+                                                                    <img class="rounded-circle" src="{{asset('uploads/profile/no-image.jpg')}}" width="70" height="70" alt="">
                                                                 </div>
                                                                 @endif 
                                                             </div>

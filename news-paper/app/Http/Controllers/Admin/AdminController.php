@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\Admin;
 use Session;
@@ -12,6 +15,116 @@ use Image;
 
 class AdminController extends Controller
 {
+    public $user;
+
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            $this->user = Auth::guard('admin')->user();
+            return $next($request);
+        });
+    }
+    public function index(){
+        if (is_null($this->user) || !$this->user->can('admin.view')) {
+            abort(403, 'Sorry !! You are Unauthorized to view any admin !');
+            
+        }
+        $admins = Admin::all();
+        return view('BackEnd.admins.admins', compact('admins'));
+    }
+
+    public function create(){
+        if (is_null($this->user) || !$this->user->can('admin.create')) {
+            abort(403, 'Sorry !! You are Unauthorized to view any admin !');
+            
+        }
+        $roles  = Role::all();
+        return view('BackEnd.admins.create', compact('roles'));
+    }
+
+    public function store(Request $request){
+        if (is_null($this->user) || !$this->user->can('admin.create')) {
+            abort(403, 'Sorry !! You are Unauthorized to view any admin !');
+            
+        }
+        // Validation Data
+        $request->validate([
+            'name' => 'required|max:50',
+            'email' => 'required|max:100|email|unique:admins',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        // Create New Admin
+        $admin = new Admin();
+        $admin->name = $request->name;
+        $admin->email = $request->email;
+        $admin->password = bcrypt($request->password);
+        $admin->save();
+
+        if ($request->roles) {
+            $admin->assignRole($request->roles);
+        }
+
+        session()->flash('success', 'Admin has been created !!');
+        return redirect()->route('admin.admins.index');
+    }
+
+    public function edit($id){
+        if (is_null($this->user) || !$this->user->can('admin.edit')) {
+            abort(403, 'Sorry !! You are Unauthorized to view any admin !');
+            
+        }
+        $admin = Admin::find($id);
+        $roles  = Role::all();
+        return view('BackEnd.admins.edit', compact('admin', 'roles'));
+    }
+
+    public function update(Request $request, $id){
+        if (is_null($this->user) || !$this->user->can('admin.edit')) {
+            abort(403, 'Sorry !! You are Unauthorized to view any admin !');
+            
+        }
+        // Create New Admin
+        $admin = Admin::find($id);
+
+        // Validation Data
+        $request->validate([
+            'name' => 'required|max:50',
+            'email' => 'required|max:100|email|unique:admins,email,' . $id,
+            'password' => 'nullable|min:6|confirmed',
+        ]);
+
+
+        $admin->name = $request->name;
+        $admin->email = $request->email;
+        if ($request->password) {
+            $admin->password = bcrypt($request->password);
+        }
+        $admin->save();
+
+        $admin->roles()->detach();
+        if ($request->roles) {
+            $admin->assignRole($request->roles);
+        }
+
+        session()->flash('success', 'Admin has been updated !!');
+        return redirect()->route('admin.admins.index');
+    }
+
+    public function deleteAdmin($id){
+        if (is_null($this->user) || !$this->user->can('admin.delite')) {
+            abort(403, 'Sorry !! You are Unauthorized to view any admin !');
+            
+        }
+        $admin = Admin::find($id);
+        if (!is_null($admin)) {
+            $admin->delete();
+        }
+
+        session()->flash('success', 'Admin has been deleted !!');
+        return back();
+    }
+
     public function dashboard(){
         return view("BackEnd.dashboard");
     }
@@ -36,7 +149,7 @@ class AdminController extends Controller
     		if (Auth::guard('admin')->attempt(['email'=>$data['email'],'password'=>$data['password'],'status'=>1])) {
     			return redirect('admin/dashboard');
     		}else{
-				toastr()->error('Invalide Email or Password!');
+                session()->flash('error', 'Invalide Email or Password!');
     			return redirect()->back();
     		}
     	}
@@ -80,7 +193,7 @@ class AdminController extends Controller
 			}
 
             Admin::where('email',Auth::guard('admin')->user()->email)->update(['name'=>$data['name'],'bio'=>$data['bio'],'mobile'=>$data['mobile'],'address'=>$data['address'],'location'=>$data['location'],'facebook'=>$data['facebook'],'twitter'=>$data['twitter'],'linkdin'=>$data['linkdin'],'instagram'=>$data['instagram'],'image'=>$imageName]);
-			toastr()->success('User Detaisl has been updated Successfully!');
+            session()->flash('success', 'User Detaisl has been updated Successfully!');
             return redirect()->back();
         }
 		$admin = Admin::first();
@@ -96,7 +209,7 @@ class AdminController extends Controller
         }
 
         Admin::where('id',$id)->update(['image'=>'']);
-		toastr()->success('Portfolio Image has been deleted Successfully!');
+        session()->flash('success', 'Profile Image has been deleted Successfully!');
         return redirect()->back();
 	}
 
@@ -123,13 +236,13 @@ class AdminController extends Controller
 
                 if ($data['new_pwd']==$data['confirm_pwd']) {
                     Admin::where('id',Auth::guard('admin')->user()->id)->update(['password'=>bcrypt($data['new_pwd'])]);
-					toastr()->success('Password has been updated Successfully!');
+                    session()->flash('success', 'Password has been updated Successfully!');
                 }else{
-				   toastr()->error('new Password & confirm password not match!');
+                   session()->flash('error', 'new Password & confirm password not match!');
                 }
 
             }else {
-				toastr()->error('Incorrect Current Password!');
+                session()->flash('error', 'Incorrect Current Password!');
             }
            return redirect()->back();
       }

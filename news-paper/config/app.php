@@ -166,6 +166,7 @@ return [
          * Package Service Providers...
          */
         Yoeunes\Toastr\ToastrServiceProvider::class,
+        Spatie\Permission\PermissionServiceProvider::class,
         /*
          * Application Service Providers...
          */

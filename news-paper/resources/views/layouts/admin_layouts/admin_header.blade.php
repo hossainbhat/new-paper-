@@ -122,9 +122,14 @@
             <div class="dropdown d-inline-block">
                 <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img class="rounded-circle header-profile-user" src="{{asset('BackEnd/images/users/user-1.jpg')}}"
+                    @if(Auth::guard('admin')->user()->image > 0)
+                    <img class="rounded-circle header-profile-user" src="{{asset('uploads/profile/'.Auth::guard('admin')->user()->image )}}"
                         alt="Header Avatar">
-                    <span class="d-none d-xl-inline-block ml-1">Amelia</span>
+                    @else 
+                        <img class="rounded-circle header-profile-user" src="{{asset('uploads/profile/no-image.jpg')}}"
+                        alt="Header Avatar">
+                    @endif 
+                    <span class="d-none d-xl-inline-block ml-1">{{Auth::guard('admin')->user()->name}}</span>
                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right">
